@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 class SetMatchingGame: ObservableObject{
-    private var game: Set
+    @Published private var game: Set
     
     init() {
         game = SetMatchingGame.createSetDeck()

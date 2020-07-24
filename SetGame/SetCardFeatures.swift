@@ -25,7 +25,7 @@ struct Diamond: Shape {
         }
 }
 
-struct Squiggle:Shape {
+struct Squiggle: Shape {
 
     var clockwise = true
 
@@ -63,3 +63,5 @@ struct Squiggle:Shape {
     return path
     }
 }
+
+

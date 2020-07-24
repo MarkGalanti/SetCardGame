@@ -9,19 +9,10 @@
 import SwiftUI
 
 struct Cardify: AnimatableModifier {
-    var rotation: Double
+    var isSelected: Bool
     
-    init(isFaceUp: Bool) {
-        rotation = isFaceUp ? 0 : 180
-    }
-    
-    var isFaceUp: Bool {
-        rotation < 90
-    }
-    
-    var animatableData: Double {
-        get { return rotation }
-        set { rotation = newValue }
+    init(isSelected: Bool) {
+        self.isSelected = isSelected
     }
     
     func body(content: Content) -> some View {
@@ -29,19 +20,21 @@ struct Cardify: AnimatableModifier {
             Group {
                 RoundedRectangle(cornerRadius: connerRadius).fill(Color.white)
                 RoundedRectangle(cornerRadius: connerRadius).stroke(lineWidth: edgeLineWidth)
-                content
-            }.opacity(isFaceUp ? 1 : 0)
-            RoundedRectangle(cornerRadius: connerRadius).fill()
-                .opacity(isFaceUp ? 0 : 1)
+                content.padding(5)
+            }.opacity(isSelected ? 0 : 1)
+            Group{
+                RoundedRectangle(cornerRadius: connerRadius).fill(Color.white)
+                RoundedRectangle(cornerRadius: connerRadius).stroke(lineWidth: edgeLineWidth).fill(Color.orange)
+                content.padding(8)
+            }.opacity(isSelected ? 1 : 0)
         }
-        .rotation3DEffect(Angle.degrees(rotation), axis: (0,1,0))
     }
     private let connerRadius: CGFloat = 10.0
     private let edgeLineWidth: CGFloat = 3
 }
 
 extension View {
-    func cardify(isFaceUp: Bool) -> some View {
-        self.modifier(Cardify(isFaceUp: isFaceUp))
+    func cardify(isSelected: Bool) -> some View {
+        self.modifier(Cardify(isSelected: isSelected))
     }
 }
