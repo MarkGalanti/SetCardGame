@@ -27,25 +27,22 @@ class SetMatchingGame: ObservableObject{
         game.deck
     }
     
-    var cardsInPlay: Array<Set.setCard> {
-        game.cardsInPlay
-    }
-    
-    var score: Int {
-        game.score
-    }
-    
     var indexOfTopDeck: Int {
         game.indexOfTopDeck
     }
     
-//    var colorFeatures: Array<Color> {
-//        game.colorFeatures
+//    var score: Int {
+//        game.score
 //    }
+
     
     // MARK: - Intent(s)
     
     func choose(card: Set.setCard) {
         game.choose(card: card)
+    }
+    
+    func dealThree(deck: Array<Set.setCard>) {
+        game.dealThree(deck: deck)
     }
 }

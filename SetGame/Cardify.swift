@@ -24,7 +24,7 @@ struct Cardify: AnimatableModifier {
             }.opacity(isSelected ? 0 : 1)
             Group{
                 RoundedRectangle(cornerRadius: connerRadius).fill(Color.white)
-                RoundedRectangle(cornerRadius: connerRadius).stroke(lineWidth: edgeLineWidth).fill(Color.orange)
+                RoundedRectangle(cornerRadius: connerRadius).stroke(lineWidth: edgeLineWidth+1).fill(Color.orange)
                 content.padding(8)
             }.opacity(isSelected ? 1 : 0)
         }

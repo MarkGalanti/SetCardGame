@@ -10,18 +10,14 @@ import Foundation
 
 struct Set {
     private(set) var deck: Array<setCard>
-    private(set) var cardsInPlay: Array<setCard>
-    private(set) var selectedCardsIndices: Array<Int>
     private(set) var indexOfTopDeck: Int
-    private(set) var score: Int
+//    private(set) var score: Int
 
     
     init() {
         deck = Array<setCard>()
         indexOfTopDeck = 0
-        score = 0
-        cardsInPlay = Array<setCard>()
-        selectedCardsIndices = Array<Int>()
+//        score = 0
 
         for symbolIndex in 0..<3 {
                 for colorIndex in 0..<3 {
@@ -42,7 +38,7 @@ struct Set {
     
     mutating func deal(deck: Array<setCard>) {
         for _ in 0..<12 {
-        cardsInPlay.append(deck[indexOfTopDeck])
+        self.deck[indexOfTopDeck].inPlay = true
         indexOfTopDeck += 1
         }
     }
@@ -52,9 +48,9 @@ struct Set {
         for _ in 0..<3 {
             if indexOfTopDeck >= 81 {
             return // TODO: Shouldn't get here need some restriction
-        }
-        cardsInPlay.append(deck[indexOfTopDeck])
-        indexOfTopDeck += 1
+            }
+            self.deck[indexOfTopDeck].inPlay = true
+            indexOfTopDeck += 1
         }
     }
 
@@ -62,42 +58,33 @@ struct Set {
     mutating func choose(card: setCard) {
         // choose, if not third chosen, mark seen then do nothing -- need func to check
         // if third chosen check if matching, then change isMatched to true
-        print(selectedCardsIndices)
-        if let chosenIndex: Int = cardsInPlay.firstIndex(matching: card), !cardsInPlay[chosenIndex].isSelected, !cardsInPlay[chosenIndex].isMatched {
+        if let chosenIndex: Int = deck.firstIndex(matching: card), !deck[chosenIndex].isSelected, !deck[chosenIndex].isMatched {
             //case to select non matched or face up cards and add them to the current selected cards list
-            self.cardsInPlay[chosenIndex].isSelected = true
-            selectedCardsIndices.append(chosenIndex)
-            print(cardsInPlay[chosenIndex])
-        } else if let chosenIndex: Int = cardsInPlay.firstIndex(matching: card), cardsInPlay[chosenIndex].isSelected {
+            self.deck[chosenIndex].isSelected = true
+        } else if let chosenIndex: Int = deck.firstIndex(matching: card), deck[chosenIndex].isSelected {
             //case to deselect cards
-            self.cardsInPlay[chosenIndex].isSelected = false
-            let index = selectedCardsIndices.firstIndex(of: chosenIndex)!
-            selectedCardsIndices.remove(at: index)
-            print(deck[chosenIndex])
+            self.deck[chosenIndex].isSelected = false
         }
-        
-        if selectedCardsIndices.count >= 3 {
+        let selectedCards = deck.filter({$0.isSelected == true})
+        if selectedCards.count >= 3 {
             //if we have 3 selected cards we check if theres a match
-            let firstCard = cardsInPlay[selectedCardsIndices[0]]
-            let secondCard = cardsInPlay[selectedCardsIndices[1]]
-            let thirdCard = cardsInPlay[selectedCardsIndices[2]]
-            if isMatch(firstCard: firstCard, secondCard: secondCard, thirdCard: thirdCard) {
+            if isMatch(firstCard: selectedCards[0], secondCard: selectedCards[1], thirdCard: selectedCards[2]) {
                 print("match!") // TODO: remove
-                self.cardsInPlay[selectedCardsIndices[0]].isMatched = true
-                self.cardsInPlay[selectedCardsIndices[1]].isMatched = true
-                self.cardsInPlay[selectedCardsIndices[2]].isMatched = true
-                self.cardsInPlay.remove(at: selectedCardsIndices[0])
-                self.cardsInPlay.remove(at: selectedCardsIndices[1])
-                self.cardsInPlay.remove(at: selectedCardsIndices[2])
+                self.deck[deck.firstIndex(matching: selectedCards[0])!].isMatched = true
+                self.deck[deck.firstIndex(matching: selectedCards[1])!].isMatched = true
+                self.deck[deck.firstIndex(matching: selectedCards[2])!].isMatched = true
+
+                self.deck[deck.firstIndex(matching: selectedCards[0])!].inPlay = false
+                self.deck[deck.firstIndex(matching: selectedCards[1])!].inPlay = false
+                self.deck[deck.firstIndex(matching: selectedCards[2])!].inPlay = false
                 dealThree(deck: self.deck)
             } else {
                 //not match so we remove all three cards from the selected list
                 print("no match!") // TODO: remove
             }
-                self.cardsInPlay[selectedCardsIndices[0]].isSelected = false
-                self.cardsInPlay[selectedCardsIndices[1]].isSelected = false
-                self.cardsInPlay[selectedCardsIndices[2]].isSelected = false
-                selectedCardsIndices.removeAll()
+                self.deck[deck.firstIndex(matching: selectedCards[0])!].isSelected = false
+                self.deck[deck.firstIndex(matching: selectedCards[1])!].isSelected = false
+                self.deck[deck.firstIndex(matching: selectedCards[2])!].isSelected = false
         }
     }
     
@@ -114,6 +101,7 @@ struct Set {
     struct setCard: Identifiable {
         var isSelected: Bool = false
         var isMatched: Bool = false
+        var inPlay: Bool = false
         
         var symbol: Int
         var color: Int

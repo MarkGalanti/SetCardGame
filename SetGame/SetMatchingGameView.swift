@@ -12,17 +12,27 @@ struct ContentView: View {
     @ObservedObject var viewModel: SetMatchingGame
     var body: some View {
         VStack {
-            Grid(items: viewModel.cardsInPlay) { card in
+            Grid(items: viewModel.deck.filter({$0.inPlay == true})) { card in
                 CardView(card: card).onTapGesture {
                     withAnimation(.easeInOut(duration: 0.75)) {
                         self.viewModel.choose(card: card)
                     }
-                }.padding(5)
+                }.aspectRatio(2/3, contentMode: .fit).padding(3)
             }.padding()
+            
+            Spacer()
+            
+            Section {
+                Button(action: {
+                withAnimation(.easeInOut(duration: 0.75)) {
+                    self.viewModel.dealThree(deck: self.viewModel.deck)
+                }
+                }, label: {
+                    Text("Deal Three").font(.title)
+                    })
+            }.disabled(viewModel.indexOfTopDeck >= 81)
         }
-        
     }
-
 }
 
 struct CardView: View {
@@ -52,7 +62,7 @@ struct CardView: View {
                             Capsule().stroke(colors[self.card.color], lineWidth: 4)
                         }
                         
-                    }
+                    }.padding(5)
                 }
             }
             .cardify(isSelected: card.isSelected)
